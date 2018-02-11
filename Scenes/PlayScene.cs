@@ -20,7 +20,7 @@ namespace MonoGameJam.Scenes
         protected Vector2 TileXY = new Vector2(18, 9);
 
         protected Player Player;
-
+        private HUD HUD;
         protected List<Sprite> sprites;
 
         protected Vector2 Center;
@@ -48,11 +48,14 @@ namespace MonoGameJam.Scenes
             floor_tile = Game.Content.Load<Texture2D>("tiles/floor");
             Center = new Vector2(GameVars.GAME_WIDTH / 2, GameVars.GAME_HEIGHT / 2);
             Player = new Player(Utilities.Block.ColorBlock(24, Color.Chocolate, Graphics), Center);
+            HUD = new HUD(Graphics, Game.Content.Load<SpriteFont>("fonts/HUD"));
 
             sprites = new List<Sprite>();
             sprites.Add(Player);
 
             sprites.Add(new Sprite(Utilities.Block.ColorBlock(24, Color.Purple, Graphics), Center - new Vector2(32, 32)));
+
+            ContentManager.AddImage("Projectile", Game.Content.Load<Texture2D>("projectiles/projectile"));
 
         }
 
@@ -64,7 +67,22 @@ namespace MonoGameJam.Scenes
 
             var pc = InputHelper.GetPlayerController();
 
-            Player.Update(pc, sprites, gameTime);
+            var Projectiles = Player.Update(pc, sprites, gameTime);
+            foreach(var sprite in sprites)
+            {
+                if (sprite == Player)
+                    continue;
+                sprite.Update(gameTime);
+            }
+
+            if (Projectiles != null && Projectiles.Count() > 0)
+            {
+                foreach (var proj in Projectiles)
+                {
+                    sprites.Add(proj);
+                }
+            }
+            HUD.Update(gameTime);
         }
 
         public RenderTarget2D Draw(GameTime gameTime)
@@ -90,10 +108,11 @@ namespace MonoGameJam.Scenes
                     sprite.Draw(gameTime, Batch);
                 }
 
-                //Batch.Draw(Player, new Rectangle((int)(Center.X-12), (int)(Center.Y-12), 24, 24), Color.White * 0.5f);
             }
 
             Batch.End();
+
+            HUD.Draw(gameTime);
 
             Graphics.SetRenderTarget(null);
             return Target;

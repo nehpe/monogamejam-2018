@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonoGameJam.Entities
 {
-    class Sprite
+    public class Sprite
     {
         protected Texture2D SpriteImage;
 

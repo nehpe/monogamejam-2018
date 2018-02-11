@@ -16,8 +16,9 @@ namespace MonoGameJam.Entities
         public Player(Texture2D Image, Vector2 Position) : base(Image, Position)
         { }
 
-        public void Update(PlayerController pc, List<Sprite> sprites, GameTime gameTime)
+        public List<Projectile> Update(PlayerController pc, List<Sprite> sprites, GameTime gameTime)
         {
+            #region Player Movement
             this.Velocity = Vector2.Zero;
             if (pc.MovementDirection != Vector2.Zero)
             {
@@ -51,8 +52,24 @@ namespace MonoGameJam.Entities
                     }
                 }
             }
+            #endregion
+
+            #region Shooting stuffs
+
+            var Projectiles = new List<Projectile>();
+
+            if (pc.ShootDirection != Vector2.Zero)
+            {
+                Projectiles.Add(new Projectile(Position)
+                {
+                    Directionality = pc.ShootDirection
+                });
+            }
+            #endregion
 
             base.Update(gameTime);
+
+            return Projectiles;
         }
     }
 }

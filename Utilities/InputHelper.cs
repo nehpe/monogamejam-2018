@@ -64,6 +64,28 @@ namespace MonoGameJam.Utilities
 
             pc.MovementDirection = movementDirection;
 
+            var shootDirection = Vector2.Zero;
+
+            if (IsKeyJustPressed(Keys.Left))
+            {
+                shootDirection.X = -1;
+            }
+            if (IsKeyJustPressed(Keys.Right))
+            {
+                shootDirection.X = 1;
+            }
+
+            if (IsKeyJustPressed(Keys.Up))
+            {
+                shootDirection.Y = -1;
+            }
+            if (IsKeyJustPressed(Keys.Down))
+            {
+                shootDirection.Y = 1;
+            }
+
+            pc.ShootDirection = shootDirection;
+
             return pc;
         }
     }
