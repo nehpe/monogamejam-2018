@@ -16,7 +16,7 @@ namespace MonoGameJam.Entities
 
         protected Vector2 Velocity;
 
-        public Rectangle Rectangle { get => new Rectangle((int)Position.X,
+        public virtual Rectangle Rectangle { get => new Rectangle((int)Position.X,
                      (int)Position.Y,
                      (int)SpriteImage.Width,
                      (int)SpriteImage.Height); }

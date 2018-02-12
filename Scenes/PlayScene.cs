@@ -15,7 +15,8 @@ namespace MonoGameJam.Scenes
         protected SpriteBatch Batch;
         protected RenderTarget2D Target;
 
-        protected Texture2D floor_tile;
+        //protected Texture2D floor_tile;
+        protected Level Level;
         protected Vector2 TileOffset = new Vector2(32, 32);
         protected Vector2 TileXY = new Vector2(18, 9);
 
@@ -45,18 +46,27 @@ namespace MonoGameJam.Scenes
 
         public void LoadContent()
         {
-            floor_tile = Game.Content.Load<Texture2D>("tiles/floor");
+            //floor_tile = Game.Content.Load<Texture2D>("tiles/floor");
             Center = new Vector2(GameVars.GAME_WIDTH / 2, GameVars.GAME_HEIGHT / 2);
-            Player = new Player(Utilities.Block.ColorBlock(24, Color.Chocolate, Graphics), Center);
+            
             HUD = new HUD(Graphics, Game.Content.Load<SpriteFont>("fonts/HUD"));
 
-            sprites = new List<Sprite>();
-            sprites.Add(Player);
 
-            sprites.Add(new Sprite(Utilities.Block.ColorBlock(24, Color.Purple, Graphics), Center - new Vector2(32, 32)));
+
+            
 
             ContentManager.AddImage("Projectile", Game.Content.Load<Texture2D>("projectiles/projectile"));
+            ContentManager.AddImage("Tileset", Game.Content.Load<Texture2D>("tiles/dungeon_sheet"));
+            ContentManager.AddImage("Knight", Game.Content.Load<Texture2D>("tiles/knight_proper"));
 
+            Level = new Level(Graphics);
+
+            sprites = new List<Sprite>();
+
+            //sprites.Add(new Sprite(Utilities.Block.ColorBlock(24, Color.Purple, Graphics), Center - new Vector2(32, 32)));
+            Player = new Player(new Rectangle(0, 0, 16, 16), ContentManager.GetImage("Knight"), Center);
+            sprites.AddRange(Level.Initialize());
+            sprites.Add(Player);
         }
 
         #endregion
@@ -94,13 +104,8 @@ namespace MonoGameJam.Scenes
 
             {
                 #region Floor Rendering
-                for (var w = 0; w < TileXY.X; w++)
-                {
-                    for (var h = 0; h < TileXY.Y; h++)
-                    {
-                        Batch.Draw(floor_tile, new Rectangle((int)(TileOffset.X + (w * 32)), (int)(TileOffset.Y + (h * 32)), 32, 32), Color.White * 0.5f);
-                    }
-                }
+                Level.Draw(gameTime);
+                
                 #endregion
 
                 foreach (var sprite in sprites)

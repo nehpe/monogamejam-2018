@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace MonoGameJam.Entities
 {
-    class Player : Sprite
+    class Player : Wall
     {
-        float SPEED = 5;
+        float SPEED = 2;
 
-        public Player(Texture2D Image, Vector2 Position) : base(Image, Position)
+        public Player(Rectangle SourceRec, Texture2D Image, Vector2 Position) : base(SourceRec, Image, Position)
         { }
 
         public List<Projectile> Update(PlayerController pc, List<Sprite> sprites, GameTime gameTime)
