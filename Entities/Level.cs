@@ -35,9 +35,41 @@ namespace MonoGameJam.Entities
             List<Sprite> Sprites = new List<Sprite>();
 
             Sprites.AddRange(initWalls());
+
             Sprites.AddRange(initObjects());
 
+            Sprites.AddRange(initEnemies());
+
             return Sprites;
+        }
+
+        private List<Sprite> initEnemies()
+        {
+            var Enemies = new List<Sprite>();
+
+            Rectangle tilesetRec;
+            for (var i = 0; i < Map.Layers[1].Tiles.Count; i++)
+            {
+                int gid = Map.Layers[1].Tiles[i].Gid;
+
+                if (gid == 0) // empty tile slot
+                {
+                    continue;
+                }
+                else
+                {
+                    int tileFrame = gid - 1;
+                    int column = tileFrame % TilesetWidth;
+                    int row = (int)Math.Floor((double)tileFrame / (double)TilesetWidth);
+                    float x = (i % Map.Width) * TileSize + Offset.X;
+                    float y = (float)Math.Floor(i / (double)Map.Width) * TileSize + Offset.Y;
+
+                    tilesetRec = new Rectangle(TileSize * column, TileSize * row, TileSize, TileSize);
+
+                    Enemies.Add(new Enemy(tilesetRec, FloorTiles, new Vector2(x, y)));
+                }
+            }
+            return Enemies;
         }
 
         private List<Sprite> initWalls()
@@ -45,9 +77,9 @@ namespace MonoGameJam.Entities
             var Walls = new List<Sprite>();
 
             Rectangle tilesetRec;
-            for (var i = 0; i < Map.Layers[2].Tiles.Count; i++)
+            for (var i = 0; i < Map.Layers[3].Tiles.Count; i++)
             {
-                int gid = Map.Layers[2].Tiles[i].Gid;
+                int gid = Map.Layers[3].Tiles[i].Gid;
 
                 if (gid == 0) // empty tile slot
                 {
@@ -75,9 +107,9 @@ namespace MonoGameJam.Entities
             var Items = new List<Sprite>();
 
             Rectangle tilesetRec;
-            for (var i = 0; i < Map.Layers[1].Tiles.Count; i++)
+            for (var i = 0; i < Map.Layers[2].Tiles.Count; i++)
             {
-                int gid = Map.Layers[1].Tiles[i].Gid;
+                int gid = Map.Layers[2].Tiles[i].Gid;
 
                 if (gid == 0) // empty tile slot
                 {
@@ -93,7 +125,7 @@ namespace MonoGameJam.Entities
 
                     tilesetRec = new Rectangle(TileSize * column, TileSize * row, TileSize, TileSize);
 
-                    Items.Add(new Wall(tilesetRec, FloorTiles, new Vector2(x, y)));
+                    Items.Add(new Item(tilesetRec, FloorTiles, new Vector2(x, y)));
                 }
             }
 

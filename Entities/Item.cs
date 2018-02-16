@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonoGameJam.Entities
 {
-    class Item : Wall
+    class Item : Sprite
     {
         public Item(Rectangle SourceRec, Texture2D SpriteImage, Vector2 Position) : base(SourceRec, SpriteImage, Position)
         { }

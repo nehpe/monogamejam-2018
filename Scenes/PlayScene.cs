@@ -48,25 +48,23 @@ namespace MonoGameJam.Scenes
         {
             //floor_tile = Game.Content.Load<Texture2D>("tiles/floor");
             Center = new Vector2(GameVars.GAME_WIDTH / 2, GameVars.GAME_HEIGHT / 2);
-            
+
             HUD = new HUD(Graphics, Game.Content.Load<SpriteFont>("fonts/HUD"));
 
-
-
-            
-
-            ContentManager.AddImage("Projectile", Game.Content.Load<Texture2D>("projectiles/projectile"));
+            ContentManager.AddImage("Projectile", Game.Content.Load<Texture2D>("projectiles/fireball"));
             ContentManager.AddImage("Tileset", Game.Content.Load<Texture2D>("tiles/dungeon_sheet"));
             ContentManager.AddImage("Knight", Game.Content.Load<Texture2D>("tiles/knight_proper"));
+            ContentManager.AddImage("Portal", Game.Content.Load<Texture2D>("tiles/portal"));
 
             Level = new Level(Graphics);
 
             sprites = new List<Sprite>();
 
-            //sprites.Add(new Sprite(Utilities.Block.ColorBlock(24, Color.Purple, Graphics), Center - new Vector2(32, 32)));
-            Player = new Player(new Rectangle(0, 0, 16, 16), ContentManager.GetImage("Knight"), Center);
+            Player = new Player(ContentManager.GetImage("Knight"), Center + new Vector2(0, 32));
             sprites.AddRange(Level.Initialize());
             sprites.Add(Player);
+
+            sprites.Add(new Portal(ContentManager.GetImage("Portal"), new Vector2(256, 128)));
         }
 
         #endregion
@@ -78,11 +76,50 @@ namespace MonoGameJam.Scenes
             var pc = InputHelper.GetPlayerController();
 
             var Projectiles = Player.Update(pc, sprites, gameTime);
-            foreach(var sprite in sprites)
+
+            foreach (var sprite in sprites)
             {
                 if (sprite == Player)
                     continue;
-                sprite.Update(gameTime);
+
+                if (sprite is Enemy)
+                {
+                    var enemy = (Enemy)sprite;
+                    enemy.Update(gameTime, sprites.Where(x => x is Projectile).ToList());
+                }
+                else if (sprite is Wall)
+                {
+                    var wall = (Wall)sprite;
+                    wall.Update(gameTime, sprites.Where(x => x is Projectile).ToList());
+                }
+                else
+                {
+                    sprite.Update(gameTime);
+                }
+            }
+
+            if (pc.Mouse.LeftClicked)
+            {
+                var portals = sprites.Where(x => x is Portal).ToList();
+                foreach (Portal portal in portals)
+                {
+                    if (portal.Rectangle.Contains(pc.Mouse.Position))
+                    {
+                        Player.TeleportTo(new Vector2(portal.Rectangle.X, portal.Rectangle.Y));
+                        portal.IsDead = true;
+                        break;
+                    }
+                }
+            }
+
+            var deadSprites = sprites.Where(x => x.IsDead).ToList();
+            foreach (var s in deadSprites)
+            {
+                if (s is Enemy)
+                {
+                    sprites.Add(new Portal(ContentManager.GetImage("Portal"), new Vector2(s.Rectangle.X, s.Rectangle.Y)));
+                }
+                sprites.Remove(s);
             }
 
             if (Projectiles != null && Projectiles.Count() > 0)
@@ -92,6 +129,7 @@ namespace MonoGameJam.Scenes
                     sprites.Add(proj);
                 }
             }
+
             HUD.Update(gameTime);
         }
 
@@ -105,7 +143,7 @@ namespace MonoGameJam.Scenes
             {
                 #region Floor Rendering
                 Level.Draw(gameTime);
-                
+
                 #endregion
 
                 foreach (var sprite in sprites)

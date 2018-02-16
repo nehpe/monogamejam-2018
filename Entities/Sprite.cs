@@ -12,25 +12,41 @@ namespace MonoGameJam.Entities
     {
         protected Texture2D SpriteImage;
 
+        public bool IsDead = false;
+
         protected Vector2 Position;
 
-        protected Vector2 Velocity;
+        protected Vector2 Velocity = Vector2.Zero;
+
+        protected Rectangle SourceRec;
 
         public virtual Rectangle Rectangle { get => new Rectangle((int)Position.X,
                      (int)Position.Y,
-                     (int)SpriteImage.Width,
-                     (int)SpriteImage.Height); }
+                     (int)SourceRec.Width,
+                     (int)SourceRec.Height); }
+
+        public Sprite(Rectangle SourceRec, Texture2D SpriteImage, Vector2 Position)
+        {
+            this.SpriteImage = SpriteImage;
+            this.SourceRec = SourceRec;
+            this.Position = Position;
+        }
 
         public Sprite(Texture2D SpriteImage, Vector2 Position)
         {
             this.SpriteImage = SpriteImage;
+            this.SourceRec = new Rectangle(0, 0, SpriteImage.Width, SpriteImage.Height);
             this.Position = Position;
-            this.Velocity = Vector2.Zero;
+            
         }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch batch)
         {
-            batch.Draw(SpriteImage, Position, Color.White);
+            batch.Draw(SpriteImage,
+                            new Rectangle((int)Position.X, (int)Position.Y, SourceRec.Width, SourceRec.Height),
+                            SourceRec,
+                            Color.White
+                            );
         }
 
         public virtual void Update(GameTime gameTime)
