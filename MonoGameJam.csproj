@@ -60,6 +60,7 @@
     <Compile Include="Scenes\PlayScene.cs" />
     <Compile Include="Utilities\Animation.cs" />
     <Compile Include="Utilities\Block.cs" />
+    <Compile Include="Utilities\Camera2D.cs" />
     <Compile Include="Utilities\ContentManager.cs" />
     <Compile Include="Utilities\HUD.cs" />
     <Compile Include="Utilities\InputHelper.cs" />

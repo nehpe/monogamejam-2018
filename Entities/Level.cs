@@ -131,16 +131,14 @@ namespace MonoGameJam.Entities
             return Items;
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, SpriteBatch Batch)
         {
-            Batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
             {
-                DrawFloor();
+                DrawFloor(Batch);
             }
-            Batch.End();
         }
 
-        private void DrawFloor()
+        private void DrawFloor(SpriteBatch Batch)
         {
             Rectangle tilesetRec;
             for (var i = 0; i < Map.Layers[0].Tiles.Count; i++)

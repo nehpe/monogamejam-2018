@@ -14,8 +14,6 @@ namespace MonoGameJam.Scenes
     {
         protected SpriteBatch Batch;
         protected RenderTarget2D Target;
-
-        //protected Texture2D floor_tile;
         protected Level Level;
         protected Vector2 TileOffset = new Vector2(32, 32);
         protected Vector2 TileXY = new Vector2(18, 9);
@@ -23,6 +21,8 @@ namespace MonoGameJam.Scenes
         protected Player Player;
         private HUD HUD;
         protected List<Sprite> sprites;
+
+        private Camera2D _camera;
 
         protected Vector2 Center;
 
@@ -33,7 +33,6 @@ namespace MonoGameJam.Scenes
                 DepthFormat.Depth24);
 
             Batch = new SpriteBatch(Graphics);
-
         }
 
 
@@ -42,11 +41,11 @@ namespace MonoGameJam.Scenes
         public void Initialize()
         {
             InputHelper.Update();
+            _camera = new Camera2D(Graphics.Viewport);
         }
 
         public void LoadContent()
         {
-            //floor_tile = Game.Content.Load<Texture2D>("tiles/floor");
             Center = new Vector2(GameVars.GAME_WIDTH / 2, GameVars.GAME_HEIGHT / 2);
 
             HUD = new HUD(Graphics, Game.Content.Load<SpriteFont>("fonts/HUD"));
@@ -76,6 +75,8 @@ namespace MonoGameJam.Scenes
             var pc = InputHelper.GetPlayerController();
 
             var Projectiles = Player.Update(pc, sprites, gameTime);
+            
+            _camera.LookAt(new Vector2(Player.Rectangle.X, Player.Rectangle.Y));
 
             foreach (var sprite in sprites)
             {
@@ -138,11 +139,11 @@ namespace MonoGameJam.Scenes
             Graphics.SetRenderTarget(Target);
             Graphics.Clear(new Color(6, 6, 6));
 
-            Batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
-
+            Batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp,
+                DepthStencilState.Default, RasterizerState.CullNone, transformMatrix: _camera.GetViewMatrix());
             {
                 #region Floor Rendering
-                Level.Draw(gameTime);
+                Level.Draw(gameTime, Batch);
 
                 #endregion
 
