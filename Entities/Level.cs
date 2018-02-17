@@ -10,13 +10,15 @@ using TiledSharp;
 
 namespace MonoGameJam.Entities
 {
-    class Level
+    public class Level
     {
         protected TmxMap Map;
         protected int TileSize = 16;
         protected Texture2D FloorTiles;
         protected int TilesetWidth;
 
+        // Offset could be set on the TMX file, but probably
+        // isn't necessary in the long term
         protected Vector2 Offset = new Vector2(32, 32);
 
         protected SpriteBatch Batch;
@@ -28,7 +30,6 @@ namespace MonoGameJam.Entities
             FloorTiles = ContentManager.GetImage("Tileset");
             TilesetWidth = FloorTiles.Width / 16;
         }
-
 
         public List<Sprite> Initialize()
         {
@@ -98,7 +99,6 @@ namespace MonoGameJam.Entities
                     Walls.Add(new Wall(tilesetRec, FloorTiles, new Vector2(x, y)));
                 }
             }
-
             return Walls;
         }
 
@@ -128,13 +128,11 @@ namespace MonoGameJam.Entities
                     Items.Add(new Item(tilesetRec, FloorTiles, new Vector2(x, y)));
                 }
             }
-
             return Items;
         }
 
         public void Draw(GameTime gameTime)
         {
-
             Batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
             {
                 DrawFloor();

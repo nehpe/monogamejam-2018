@@ -14,16 +14,12 @@ namespace MonoGameJam.Utilities
         public int currentFrame = 0;
         public int totalFrames = 0;
         public Rectangle StartRect;
-
         private float _timer = 0f;
-
-        public Rectangle Rectangle { get
-            {
-                return new Rectangle(
+        public Rectangle Rectangle { get =>
+                new Rectangle(
                     StartRect.X + (currentFrame * tileSize), StartRect.Y,
                     tileSize, tileSize
-                    );
-            }
+                );
         }
 
         public void Update(GameTime gameTime)

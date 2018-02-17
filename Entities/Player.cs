@@ -9,32 +9,34 @@ using System.Threading.Tasks;
 
 namespace MonoGameJam.Entities
 {
-    class Player : Sprite
+    public class Player : Sprite
     {
         float SPEED = 2;
-
         float ChangeDirectionCounter = 0f;
-
         Dictionary<AnimationDirection, Animation> Animations = new Dictionary<AnimationDirection, Animation>();
-
         private AnimationDirection CurrentAnimation = AnimationDirection.NORTH;
-
         private int tileSize = 16;
 
-        public override Rectangle Rectangle { get => 
+        public override Rectangle Rectangle { 
+            get => 
                 new Rectangle(
                     (int) Position.X,
                     (int) Position.Y,
                     tileSize,
-                    tileSize); }
-
-        protected Vector2 Center { get => new Vector2(Rectangle.X + Rectangle.Width / 2, Rectangle.Y + Rectangle.Height / 2); }
+                    tileSize
+                ); 
+        }
+        protected Vector2 Center { 
+            get => 
+                new Vector2(
+                    Rectangle.X + Rectangle.Width / 2, 
+                    Rectangle.Y + Rectangle.Height / 2
+                ); 
+        }
 
         public Player(Texture2D Image, Vector2 Position) : base(Image, Position)
         {
-
             #region Add Animation Directions
-
             Animations.Add(AnimationDirection.NORTH, new Animation()
             {
                 totalFrames = Image.Width/tileSize,
@@ -75,9 +77,7 @@ namespace MonoGameJam.Entities
                 totalFrames = Image.Width/tileSize,
                 StartRect = new Rectangle(0,112,tileSize,tileSize)
             });
-
             #endregion
-
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch batch)
@@ -96,9 +96,12 @@ namespace MonoGameJam.Entities
 
         public List<Projectile> Update(PlayerController pc, List<Sprite> sprites, GameTime gameTime)
         {
+            //TODO: Refactor this crap (np)
+
             AnimationDirection? tmpCurrentAnimation = null;
 
             #region Player Movement
+
             this.Velocity = Vector2.Zero;
             if (pc.MovementDirection != Vector2.Zero)
             {

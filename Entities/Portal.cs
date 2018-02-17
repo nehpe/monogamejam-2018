@@ -13,7 +13,5 @@ namespace MonoGameJam.Entities
         public Portal(Texture2D SpriteImage, Vector2 Position) : base(SpriteImage, Position)
         {
         }
-
-
     }
 }

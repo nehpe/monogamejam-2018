@@ -11,19 +11,19 @@ namespace MonoGameJam.Entities
     public class Sprite
     {
         protected Texture2D SpriteImage;
-
         public bool IsDead = false;
-
         protected Vector2 Position;
-
         protected Vector2 Velocity = Vector2.Zero;
-
         protected Rectangle SourceRec;
 
-        public virtual Rectangle Rectangle { get => new Rectangle((int)Position.X,
-                     (int)Position.Y,
-                     (int)SourceRec.Width,
-                     (int)SourceRec.Height); }
+        public virtual Rectangle Rectangle { 
+            get => new Rectangle(
+                (int)Position.X,
+                (int)Position.Y,
+                (int)SourceRec.Width,
+                (int)SourceRec.Height
+            ); 
+        }
 
         public Sprite(Rectangle SourceRec, Texture2D SpriteImage, Vector2 Position)
         {
@@ -37,16 +37,18 @@ namespace MonoGameJam.Entities
             this.SpriteImage = SpriteImage;
             this.SourceRec = new Rectangle(0, 0, SpriteImage.Width, SpriteImage.Height);
             this.Position = Position;
-            
         }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch batch)
         {
             batch.Draw(SpriteImage,
-                            new Rectangle((int)Position.X, (int)Position.Y, SourceRec.Width, SourceRec.Height),
-                            SourceRec,
-                            Color.White
-                            );
+                new Rectangle(
+                    (int)Position.X, (int)Position.Y, 
+                    SourceRec.Width, SourceRec.Height
+                ),
+                SourceRec,
+                Color.White
+            );
         }
 
         public virtual void Update(GameTime gameTime)
