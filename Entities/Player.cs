@@ -113,7 +113,7 @@ namespace MonoGameJam.Entities
             {
                 foreach (var sprite in sprites)
                 {
-                    if (sprite == this)
+                    if (sprite == this || sprite is Door)
                         continue;
 
                     if (this.IsTouchingBottom(sprite))
@@ -173,9 +173,55 @@ namespace MonoGameJam.Entities
                 ChangeDirectionCounter -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             }
 
+            var enProjectiles = sprites.Where(x => x is EnemyProjectile).ToList();
+            if (enProjectiles.Count != 0)
+                checkIfHit(enProjectiles);
+
             base.Update(gameTime);
 
             return Projectiles;
+        }
+
+        private void checkIfHit(List<Sprite> enProjectiles)
+        {
+            foreach (EnemyProjectile p in enProjectiles)
+            {
+                if (this.IsTouchingBottom(p))
+                {
+                    this.Velocity += p.Directionality * p.SPEED;
+                    this.takeDamage(p);
+                    p.Kill();
+                }
+                else if (this.IsTouchingTop(p))
+                {
+                    this.Velocity += p.Directionality * p.SPEED;
+                    this.takeDamage(p);
+                    p.Kill();
+                }
+                else if (this.IsTouchingRight(p))
+                {
+                    this.Velocity += p.Directionality * p.SPEED;
+                    this.takeDamage(p);
+                    p.Kill();
+                }
+                else if (this.IsTouchingLeft(p))
+                {
+                    this.Velocity += p.Directionality * p.SPEED;
+                    this.takeDamage(p);
+                    p.Kill();
+                }
+            }
+        }
+
+        private void takeDamage(EnemyProjectile p)
+        {
+            SoundManager.PlaySound("hit");
+
+            GameState.PlayerHealth -= p.Damage;
+            if (GameState.PlayerHealth <= 0)
+            {
+                this.IsDead = true;
+            }
         }
 
         #region Helpers
