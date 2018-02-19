@@ -8,7 +8,8 @@ namespace MonoGameJam
 {
     public static class GameState
     {
-        public static int PlayerHealth = 7;
-        public static int MaxPlayerHealth = 10;
+        public static int PlayerHealth = 3;
+        public static int MaxPlayerHealth = 3;
+        public static bool isDead = false;
     }
 }

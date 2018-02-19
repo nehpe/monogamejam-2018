@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using MonoGameJam.Entities;
 using MonoGameJam.Utilities;
 using System;
@@ -19,12 +21,11 @@ namespace MonoGameJam.Scenes
         protected Vector2 TileXY = new Vector2(18, 9);
 
         protected Player Player;
+        Door door;
         private HUD HUD;
         protected List<Sprite> sprites;
 
-        private Camera2D _camera;
-
-        protected Vector2 Center;
+        protected Texture2D sq;
 
         public PlayScene(MGJamGame Game, GraphicsDevice Graphics) : base(Game, Graphics)
         {
@@ -33,37 +34,50 @@ namespace MonoGameJam.Scenes
                 DepthFormat.Depth24);
 
             Batch = new SpriteBatch(Graphics);
+            sq = Utilities.Block.ColorBlock(2, Color.Red, Graphics);
         }
-
 
         #region Initialization
 
         public void Initialize()
         {
             InputHelper.Update();
-            _camera = new Camera2D(Graphics.Viewport);
         }
 
         public void LoadContent()
         {
-            Center = new Vector2(GameVars.GAME_WIDTH / 2, GameVars.GAME_HEIGHT / 2);
-
             HUD = new HUD(Graphics, Game.Content.Load<SpriteFont>("fonts/HUD"));
 
-            ContentManager.AddImage("Projectile", Game.Content.Load<Texture2D>("projectiles/fireball"));
-            ContentManager.AddImage("Tileset", Game.Content.Load<Texture2D>("tiles/dungeon_sheet"));
-            ContentManager.AddImage("Knight", Game.Content.Load<Texture2D>("tiles/knight_proper"));
-            ContentManager.AddImage("Portal", Game.Content.Load<Texture2D>("tiles/portal"));
+            // Load Images
+            {
+                ContentManager.AddImage("Projectile", Game.Content.Load<Texture2D>("projectiles/fireball"));
+                ContentManager.AddImage("EnemyProjectile", Game.Content.Load<Texture2D>("projectiles/enemy_fireball"));
+                ContentManager.AddImage("Tileset", Game.Content.Load<Texture2D>("tiles/dungeon_sheet"));
+                ContentManager.AddImage("Knight", Game.Content.Load<Texture2D>("tiles/knight_proper"));
+                ContentManager.AddImage("Portal", Game.Content.Load<Texture2D>("tiles/portal"));
+            }
+            // Load audio
+            {
+                var music_dark = Game.Content.Load<Song>("music/dark");
+                MediaPlayer.Volume = 0.8f;
+                MediaPlayer.Play(music_dark);
+                ContentManager.AddSound("enemy_fire", Game.Content.Load<SoundEffect>("sfx/enemy_fire"));
+                ContentManager.AddSound("fire", Game.Content.Load<SoundEffect>("sfx/fire"));
+                ContentManager.AddSound("hit", Game.Content.Load<SoundEffect>("sfx/hit"));
+                ContentManager.AddSound("warp", Game.Content.Load<SoundEffect>("sfx/warp"));
+                ContentManager.AddSound("win", Game.Content.Load<SoundEffect>("sfx/win"));
+
+                SoundManager.LoadSounds(ContentManager.GetAllSounds());
+            }
 
             Level = new Level(Graphics);
 
             sprites = new List<Sprite>();
 
-            Player = new Player(ContentManager.GetImage("Knight"), Center + new Vector2(0, 32));
             sprites.AddRange(Level.Initialize());
+            door = (Door)sprites.Where(x => x is Door).First();
+            Player = new Player(ContentManager.GetImage("Knight"), Level.StartPosition);
             sprites.Add(Player);
-
-            sprites.Add(new Portal(ContentManager.GetImage("Portal"), new Vector2(256, 128)));
         }
 
         #endregion
@@ -75,8 +89,15 @@ namespace MonoGameJam.Scenes
             var pc = InputHelper.GetPlayerController();
 
             var Projectiles = Player.Update(pc, sprites, gameTime);
-            
-            _camera.LookAt(new Vector2(Player.Rectangle.X, Player.Rectangle.Y));
+
+            var enProjectiles = new List<EnemyProjectile>();
+
+            bool touching;
+            touching = door.Update(Player, gameTime);
+            if (touching)
+            {
+                ClearAndLoad(Level.NextLevel());
+            }
 
             foreach (var sprite in sprites)
             {
@@ -86,12 +107,14 @@ namespace MonoGameJam.Scenes
                 if (sprite is Enemy)
                 {
                     var enemy = (Enemy)sprite;
-                    enemy.Update(gameTime, sprites.Where(x => x is Projectile).ToList());
+                    enProjectiles.AddRange(enemy.Update(gameTime, sprites, Player));
                 }
                 else if (sprite is Wall)
                 {
                     var wall = (Wall)sprite;
                     wall.Update(gameTime, sprites.Where(x => x is Projectile).ToList());
+                } else if (sprite is Door)
+                {
                 }
                 else
                 {
@@ -106,6 +129,7 @@ namespace MonoGameJam.Scenes
                 {
                     if (portal.Rectangle.Contains(pc.Mouse.Position))
                     {
+                        SoundManager.PlaySound("warp");
                         Player.TeleportTo(new Vector2(portal.Rectangle.X, portal.Rectangle.Y));
                         portal.IsDead = true;
                         break;
@@ -125,13 +149,41 @@ namespace MonoGameJam.Scenes
 
             if (Projectiles != null && Projectiles.Count() > 0)
             {
+                SoundManager.PlaySound("fire");
                 foreach (var proj in Projectiles)
                 {
                     sprites.Add(proj);
                 }
             }
+            if (enProjectiles != null && enProjectiles.Count() > 0)
+            {
+                SoundManager.PlaySound("fire");
+                foreach (var proj in enProjectiles)
+                {
+                    sprites.Add(proj);
+                }
+            }
+
+            checkIfAllEnemiesAreDead();
 
             HUD.Update(gameTime);
+        }
+
+        private void ClearAndLoad(List<Sprite> newSprites)
+        {
+            newSprites.Add(Player);
+            Player.TeleportTo(Level.StartPosition);
+            sprites = newSprites;
+            door = (Door)sprites.Where(x => x is Door).First();
+        }
+
+        private void checkIfAllEnemiesAreDead()
+        {
+            if (sprites.Where(x => x is Enemy).Count() == 0)
+            {
+                Door door = (Door)sprites.Where(x => x is Door).First();
+                door.Open();
+            }
         }
 
         public RenderTarget2D Draw(GameTime gameTime)
@@ -140,7 +192,7 @@ namespace MonoGameJam.Scenes
             Graphics.Clear(new Color(6, 6, 6));
 
             Batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp,
-                DepthStencilState.Default, RasterizerState.CullNone, transformMatrix: _camera.GetViewMatrix());
+                DepthStencilState.Default, RasterizerState.CullNone);
             {
                 #region Floor Rendering
                 Level.Draw(gameTime, Batch);
@@ -151,7 +203,6 @@ namespace MonoGameJam.Scenes
                 {
                     sprite.Draw(gameTime, Batch);
                 }
-
             }
 
             Batch.End();
