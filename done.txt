@@ -1,0 +1,9 @@
+x 2018-02-18 All enemies dead check
+x 2018-02-18 Door should open when all enemies are dead
+x 2018-02-18 Music
+x 2018-02-18 Music in the Game
+x 2018-02-18 Progress levels
+x 2018-02-18 Sound Effects
+x 2018-02-18 Enemies should attack you
+x 2018-02-18 Make levels
+x 2018-02-18 You should die

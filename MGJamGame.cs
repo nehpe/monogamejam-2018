@@ -10,8 +10,8 @@ namespace MonoGameJam
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        PlayScene CurrentScene;
-        
+        BaseScene CurrentScene;
+
         public MGJamGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -21,7 +21,7 @@ namespace MonoGameJam
 
             graphics.ApplyChanges();
 
-            Window.Title = "Change Is Goooooood";
+            Window.Title = "Super Sexy Space Knights v 1.0 - FINAL - Super Awesome Edition - You're cute";
 
             IsMouseVisible = true;
 
@@ -32,7 +32,7 @@ namespace MonoGameJam
         {
             base.Initialize();
 
-            CurrentScene = new PlayScene(this, graphics.GraphicsDevice);
+            CurrentScene = new IntroScene(this, graphics.GraphicsDevice);
             CurrentScene.Initialize();
             CurrentScene.LoadContent();
         }
@@ -56,10 +56,17 @@ namespace MonoGameJam
             base.Update(gameTime);
         }
 
+        public void SetScene(BaseScene Scene)
+        {
+            CurrentScene = Scene;
+            CurrentScene.LoadContent();
+            CurrentScene.Initialize();
+        }
+
         protected override void Draw(GameTime gameTime)
         {
-            var output = CurrentScene.Draw(gameTime); 
-            GraphicsDevice.Clear(new Color(6,6,6));
+            var output = CurrentScene.Draw(gameTime);
+            GraphicsDevice.Clear(new Color(6, 6, 6));
 
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
             {

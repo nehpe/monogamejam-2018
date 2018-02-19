@@ -10,6 +10,7 @@ namespace MonoGameJam
     {
         public static int PlayerHealth = 3;
         public static int MaxPlayerHealth = 3;
-        public static bool isDead = false;
+        public static bool isDead { get => (GameState.PlayerHealth <= 0); }
+        public static bool isFinished = false;
     }
 }

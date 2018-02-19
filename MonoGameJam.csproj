@@ -59,6 +59,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenes\BaseScene.cs" />
+    <Compile Include="Scenes\DeathScene.cs" />
+    <Compile Include="Scenes\EndScene.cs" />
+    <Compile Include="Scenes\IntroScene.cs" />
     <Compile Include="Scenes\PlayScene.cs" />
     <Compile Include="Utilities\Animation.cs" />
     <Compile Include="Utilities\Block.cs" />

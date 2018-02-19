@@ -39,12 +39,12 @@ namespace MonoGameJam.Scenes
 
         #region Initialization
 
-        public void Initialize()
+        public override void Initialize()
         {
             InputHelper.Update();
         }
 
-        public void LoadContent()
+        public override void LoadContent()
         {
             HUD = new HUD(Graphics, Game.Content.Load<SpriteFont>("fonts/HUD"));
 
@@ -82,9 +82,15 @@ namespace MonoGameJam.Scenes
 
         #endregion
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             InputHelper.Update();
+
+            if (GameState.isDead)
+            {
+                Game.SetScene(new DeathScene(Game, Graphics));
+                return;
+            }
 
             var pc = InputHelper.GetPlayerController();
 
@@ -120,6 +126,20 @@ namespace MonoGameJam.Scenes
                 {
                     sprite.Update(gameTime);
                 }
+            }
+
+            if (pc.Space)
+            {
+                var portals = sprites.Where(x => x is Portal).ToList();
+
+                foreach (Portal portal in portals)
+                {
+                    SoundManager.PlaySound("warp");
+                    Player.TeleportTo(new Vector2(portal.Rectangle.X, portal.Rectangle.Y));
+                    portal.IsDead = true;
+                    break;
+                }
+
             }
 
             if (pc.Mouse.LeftClicked)
@@ -171,6 +191,11 @@ namespace MonoGameJam.Scenes
 
         private void ClearAndLoad(List<Sprite> newSprites)
         {
+            if (GameState.isFinished)
+            {
+                Game.SetScene(new EndScene(Game, Graphics));
+                return;
+            }
             newSprites.Add(Player);
             Player.TeleportTo(Level.StartPosition);
             sprites = newSprites;
@@ -186,7 +211,7 @@ namespace MonoGameJam.Scenes
             }
         }
 
-        public RenderTarget2D Draw(GameTime gameTime)
+        public override RenderTarget2D Draw(GameTime gameTime)
         {
             Graphics.SetRenderTarget(Target);
             Graphics.Clear(new Color(6, 6, 6));

@@ -119,6 +119,14 @@ namespace MonoGameJam.Utilities
 
             #endregion
 
+            #region "Getting spaced"
+            if (IsKeyJustPressed(Keys.Space))
+            {
+                Console.WriteLine("SPACE");
+                pc.Space = true;
+            }
+            #endregion
+
             #region Mouse Stuffs
             var mouse = Mouse.GetState();
             var mouseState = new nMouseState();
@@ -139,6 +147,7 @@ namespace MonoGameJam.Utilities
     {
         public Vector2 MovementDirection = Vector2.Zero;
         public Vector2 ShootDirection = Vector2.Zero;
+        public bool Space = false;
 
         public nMouseState Mouse;
         

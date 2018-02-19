@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonoGameJam.Scenes
 {
-    abstract class BaseScene
+    public abstract class BaseScene
     {
         protected MGJamGame Game;
         protected GraphicsDevice Graphics;
@@ -17,5 +18,11 @@ namespace MonoGameJam.Scenes
             this.Game = Game;
             this.Graphics = Graphics;
         }
+
+        public virtual void Initialize() { }
+        public virtual void LoadContent() { }
+
+        public virtual void Update(GameTime gameTime) { }
+        public abstract RenderTarget2D Draw(GameTime gameTime);
     }
 }

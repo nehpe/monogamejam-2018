@@ -38,6 +38,11 @@ namespace MonoGameJam.Entities
         public List<Sprite> NextLevel()
         {
             level++;
+            if (level == 4)
+            {
+                GameState.isFinished = true;
+                return new List<Sprite>();
+            }
             return LoadLevel();
         }
 

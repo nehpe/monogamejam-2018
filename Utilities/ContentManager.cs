@@ -15,7 +15,8 @@ namespace MonoGameJam.Utilities
 
         public static void AddImage(String name, Texture2D texture)
         {
-            Images.Add(name, texture);
+            if (!Images.ContainsKey(name))
+                Images.Add(name, texture);
         }
 
         public static Texture2D GetImage(String name)
@@ -26,6 +27,7 @@ namespace MonoGameJam.Utilities
 
         public static void AddSound(String name, SoundEffect sound)
         {
+            if (!Sounds.ContainsKey(name))
             Sounds.Add(name, sound);
         }
 
